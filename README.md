@@ -1,4 +1,3 @@
-# segmentation
 This repo contains implementations of papers related to Image Segmentation and Super Resolution. Many more papers to come.
 
 # Super Resolution
