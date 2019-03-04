@@ -97,9 +97,9 @@ def upsample(ni,nf,scale):
 class SrResNet(nn.Module):
     def __init__(self,nf,scale):
         super().__init__()
-        features = [conv(3,64)]    # 3channels to 64 channels for richer spatial space
+        features = [conv(3,64)]    
         for i in range(8):
-            features.append(residual_block(64))  #stride 1 blocks so dimensions don't change  
+            features.append(residual_block(64)) 
         features += [conv(64,64), upsample(64,64,scale),
                         nn.BatchNorm2d(64),conv(64,3)]
         
@@ -108,7 +108,7 @@ class SrResNet(nn.Module):
     def forward(self,x):
         return self.features(x)
 
-## Pixel Loss
+
 
 m = to_gpu(SrResNet(64,scale))
 m = nn.DataParallel(m)
@@ -125,9 +125,9 @@ preds = learn.model(VV(x))
 
 
 idx = 7                           
-show_img(y,idx,normed=False)     #input
+show_img(y,idx,normed=False)    
 
-show_img(preds,idx,normed=False)     #output
+show_img(preds,idx,normed=False)     
 
 show_img(x,idx,normed=True)
 
@@ -151,8 +151,8 @@ for i,o in enumerate(children(m_vgg)):
         blocks.append(i-1)
 blocks, [m_vgg[i] for i in blocks]
 
-vgg_layers = children(m_vgg)[:23]       #after 22, layers are course enough
-m_vgg = nn.Sequential(*vgg_layers).cuda().eval()    #Vgg would not be trained
+vgg_layers = children(m_vgg)[:23]     
+m_vgg = nn.Sequential(*vgg_layers).cuda().eval()   
 set_trainable(m_vgg,False)
 
 def Flatten(x):
@@ -164,15 +164,15 @@ class SaveFeatures():
     def hook_fn(self, module, input, output): self.features = output
     def remove(self): self.hook.remove()
 
-class FeatureLoss(nn.Module):              #Perceptual Loss
+class FeatureLoss(nn.Module):              
     def __init__(self,m,layer_ids,layer_wgts):
         super().__init__()
         self.m,self.wgts = m,layer_wgts
         self.sfs = [SaveFeatures(m[i]) for i in layer_ids]
         
     def forward(self,input, target, sum_layers=True):
-        self.m(VV(target.data))             #target->image that we're trying to create
-        res = [F.l1_loss(input,target/100)]  #Pixel Loss
+        self.m(VV(target.data))             
+        res = [F.l1_loss(input,target/100)]  
         targ_feat = [V(o.features.data.clone()) for o in self.sfs]
         self.m(input)
         res += [F.l1_loss(Flatten(inp.features),Flatten(targ))*wgt
@@ -185,7 +185,7 @@ class FeatureLoss(nn.Module):              #Perceptual Loss
         for o in self.sfs:
             o.remove()
 
-m = SrResNet(64,scale)    #how much to scale up by
+m = SrResNet(64,scale)   
 
 conv_shuffle = m.features[10][0][0]
 kernel = icnr(conv_shuffle.weight,scale=scale)
@@ -217,7 +217,7 @@ lr = 6e-3
 wd = 1e-7
 
 learn.save('sample0')  
-#learn.load('sample0')
+
 
 learn.lr_find(1e-4,0.1,wds=wd,linear =True)
 
@@ -226,7 +226,7 @@ learn.sched.plot(n_skip_end=1)
 learn.fit(lr,1,cycle_len=2,wds=wd,use_clr=(20,10))
 
 learn.save('sample1')       
-#To load learn.load('sample1')
+
 
 learn.unfreeze()
 
