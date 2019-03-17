@@ -1,4 +1,4 @@
-This repo contains implementations of papers related to Image Segmentation and Super Resolution. Many more papers to come.
+This repo contains implementations of papers Super Resolution. 
 
 # Super Resolution
 Two methods are being used to perform super resolution
@@ -65,7 +65,7 @@ Generator is trained with low quality images with ground truth being images from
 
 When pretraining generator only, here's the output:
 
-Input-------------------------------------------------------------Prediction------------------------------------------Target
+Input----------------------------------------------------Prediction------------------------------------------Target
 
 ![gen_pre1](img/gen_pre1.png)
 ![gen_pre2](img/gen_pre2.png)
