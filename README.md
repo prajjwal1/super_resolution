@@ -1,4 +1,4 @@
-This repo contains implementations of papers Super Resolution. 
+This repo contains implementations of papers
 
 # Super Resolution
 Two methods are being used to perform super resolution
